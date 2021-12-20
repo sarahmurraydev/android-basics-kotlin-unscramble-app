@@ -69,4 +69,19 @@ class GameViewModel : ViewModel() {
         }
     }
 
+    fun isWordCorrect(guess: String): Boolean {
+        return guess == currentWord
+    }
+
+    fun increaseScore() {
+        _score += SCORE_INCREASE
+    }
+
+    fun resetGame() {
+        _score = 0
+        _currentWordCount = 0
+        wordsList.clear()
+        getNextWord()
+    }
+
 }
