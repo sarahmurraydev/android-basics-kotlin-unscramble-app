@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.android.unscramble.R
@@ -44,7 +45,7 @@ class GameFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         // Inflate the layout XML file and return a binding object instance
-        binding = GameFragmentBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
         return binding.root
     }
 
@@ -59,21 +60,9 @@ class GameFragment : Fragment() {
         binding.wordCount.text = getString(
                 R.string.word_count, 0, MAX_NO_OF_WORDS)
 
-        // Observe LiveData:
-        // Observe the currentScrambledWord LiveData.
-        viewModel.currentScrambleWord.observe(viewLifecycleOwner, {
-            newWord -> binding.textViewUnscrambledWord.text = newWord
-        })
-        viewModel.currentWordCount.observe(viewLifecycleOwner, { wordCount ->
-            binding.wordCount.text = getString(
-                R.string.word_count,
-                wordCount,
-                MAX_NO_OF_WORDS
-            )
-        })
-        viewModel.score.observe(viewLifecycleOwner, { score ->
-            binding.score.text = getString(R.string.score, score)
-        })
+        binding.viewModel = viewModel
+        binding.maxNumWords = MAX_NO_OF_WORDS
+        binding.lifecycleOwner = viewLifecycleOwner
     }
 
     /*
