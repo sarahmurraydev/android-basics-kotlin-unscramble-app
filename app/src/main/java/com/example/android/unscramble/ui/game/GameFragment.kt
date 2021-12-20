@@ -64,6 +64,16 @@ class GameFragment : Fragment() {
         viewModel.currentScrambleWord.observe(viewLifecycleOwner, {
             newWord -> binding.textViewUnscrambledWord.text = newWord
         })
+        viewModel.currentWordCount.observe(viewLifecycleOwner, { wordCount ->
+            binding.wordCount.text = getString(
+                R.string.word_count,
+                wordCount,
+                MAX_NO_OF_WORDS
+            )
+        })
+        viewModel.score.observe(viewLifecycleOwner, { score ->
+            binding.score.text = getString(R.string.score, score)
+        })
     }
 
     /*
@@ -72,6 +82,7 @@ class GameFragment : Fragment() {
     */
     private fun onSubmitWord() {
         val guess = binding.textInputEditText.text.toString()
+        binding.textInputEditText.text?.clear()
 
         if(viewModel.isWordCorrect(guess)) {
             setErrorTextField(false)
@@ -82,20 +93,8 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun updateUITextFields() {
-        binding.textInputEditText.text?.clear()
-        binding.score.text = getString(R.string.score, viewModel.score)
-        binding.wordCount.text = getString(
-            R.string.word_count,
-            viewModel.currentWordCount,
-            MAX_NO_OF_WORDS
-        )
-    }
-
     private fun moveGameForward() {
-        if (viewModel.canGetNextWord()) {
-            updateUITextFields()
-        } else {
+        if (!viewModel.canGetNextWord()) {
             showUpEndGameDialog()
         }
     }
@@ -125,7 +124,6 @@ class GameFragment : Fragment() {
     private fun restartGame() {
         setErrorTextField(false)
         viewModel.resetGame()
-        updateUITextFields()
     }
 
     /*
@@ -155,7 +153,7 @@ class GameFragment : Fragment() {
         val context = requireContext()
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.congratulations)
-            .setMessage(getString(R.string.you_scored, viewModel.score))
+            .setMessage(getString(R.string.you_scored, viewModel.score.value))
             .setCancelable(false)
             .setNegativeButton(R.string.exit) { _, _ ->
                 exitGame()

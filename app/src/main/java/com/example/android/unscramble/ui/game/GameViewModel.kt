@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
-    private var _score = 0
-    private var _currentWordCount = 0
+    private var _score = MutableLiveData<Int>()
+    private var _currentWordCount = MutableLiveData<Int>()
     private var _currentScrambledWord = MutableLiveData<String>()
     //private var _wordsCanStillShow = allWordsList.toMutableList()
     //private lateinit var currentWord: String
@@ -14,13 +14,13 @@ class GameViewModel : ViewModel() {
     private lateinit var currentWord: String
 
     init {
-        getNextWord()
+        resetGame()
     }
 
-    public val score: Int
+    public val score: LiveData<Int>
         get() = _score
 
-    public val currentWordCount: Int
+    public val currentWordCount: LiveData<Int>
         get() = _currentWordCount
 
     public val currentScrambleWord: LiveData<String>
@@ -54,7 +54,7 @@ class GameViewModel : ViewModel() {
             getNextWord()
         } else {
             _currentScrambledWord.value = String(tempWord)
-            ++_currentWordCount
+            _currentWordCount.value = _currentWordCount.value?.plus(1)
             wordsList.add(currentWord)
         }
     }
@@ -63,7 +63,7 @@ class GameViewModel : ViewModel() {
     // Get the next word from the list and return true if the word count
     //  is less than the MAX_NO_OF_WORDS.
     fun canGetNextWord(): Boolean {
-        return if (_currentWordCount < MAX_NO_OF_WORDS) {
+        return if (_currentWordCount.value!! < MAX_NO_OF_WORDS) {
             getNextWord()
             true
         } else {
@@ -76,12 +76,12 @@ class GameViewModel : ViewModel() {
     }
 
     fun increaseScore() {
-        _score += SCORE_INCREASE
+        _score.value = _score.value?.plus(SCORE_INCREASE)
     }
 
     fun resetGame() {
-        _score = 0
-        _currentWordCount = 0
+        _score.value = 0
+        _currentWordCount.value = 0
         wordsList.clear()
         getNextWord()
     }
